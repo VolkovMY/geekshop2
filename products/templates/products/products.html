@@ -60,7 +60,7 @@
                     <div class="card h-100">
                         <a href="#">
                            <img class="card-img-top"
-                                src="{% static product.image %}"
+                                src="{{ product.image.url }}"
                                 alt="">
                         </a>
                         <div class="card-body">
@@ -103,7 +103,7 @@
 {% block footer %}
     <footer class="py-5 bg-dark">
         <div class="container">
-            <p class="m-0 text-center text-white">Copyright &copy; GeekShop 2020</p>
+            <p class="m-0 text-center text-white">Copyright &copy; GeekShop {% now "Y" %}</p>
         </div>
     </footer>
 {% endblock %}
