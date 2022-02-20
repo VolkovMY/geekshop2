@@ -2,7 +2,7 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib import messages
-from users.forms import UserLoginForm, UserRegistrationForm
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 
 
 def login(request):
@@ -17,7 +17,7 @@ def login(request):
                 return HttpResponseRedirect(reverse('index'))
     else:
         form = UserLoginForm()
-    form = UserLoginForm()
+
     context = {'title': 'Geekshop - Авторизация', 'form': form}
     return render(request, 'users/login.html', context)
 
@@ -33,6 +33,12 @@ def registration(request):
         form = UserRegistrationForm()
     context = {'title': 'GeekShop - Регистрация', 'form': form}
     return render(request, 'users/registration.html', context)
+
+
+def profile(request):
+    form = UserProfileForm(instance=request.user)
+    context = {'title': 'Geekshop - Личный кабинет', 'form': form}
+    return render(request, 'users/profile.html', context)
 
 
 def logout(request):
