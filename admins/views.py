@@ -40,3 +40,10 @@ def admin_users_update(request, id):
         form = UserAdminProfileForm(instance=selected_user)
     context = {'title': 'GeekShop - Редактирование пользователя', 'selected_user': selected_user, 'form': form}
     return render(request, 'admins/admin-users-update-delete.html', context)
+
+
+# Delete
+def admin_users_delete(request, id):
+    user = User.objects.get(id=id)
+    user.safe_delete()
+    return HttpResponseRedirect(reverse('admins:admin_users'))
