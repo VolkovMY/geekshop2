@@ -37,6 +37,7 @@ def registration(request):
     context = {'title': 'GeekShop - Регистрация', 'form': form}
     return render(request, 'users/registration.html', context)
 
+
 @login_required
 def profile(request):
     user = request.user
