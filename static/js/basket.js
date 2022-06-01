@@ -8,11 +8,8 @@ window.onload = function () {
             url: "/baskets/edit/" + target.name + '/' + target.value + "/",
             success: function (data) {
                 $('.basket_list').html(data.result);
-
             },
         });
 
     });
-
-    event.preventDefault();
 }
