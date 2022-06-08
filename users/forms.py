@@ -32,6 +32,12 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('username', 'email', 'first_name', 'last_name', 'password1', 'password2')
 
+    def save(self, commit=True):
+        user = super().save(commit)
+        user.is_active = False
+        user.save()
+        return user
+
 
 class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control py-4'}))

@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'geekshop.context_processors.basket'
             ],
         },
     },
@@ -136,3 +137,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 AUTH_USER_MODEL = 'users.User'
 
 LOGIN_URL = '/users/login/'
+
+# Email
+EMAIL_FILE_PATH = './mails/'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+SITE_ADDRESS = 'http://localhost:8000'

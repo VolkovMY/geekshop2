@@ -3,7 +3,8 @@ from django.urls import reverse
 from django.contrib import auth
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-
+from .utils import send_verification_mail
+from .models import User
 from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
 from baskets.models import Basket
 
@@ -29,7 +30,8 @@ def registration(request):
     if request.method == 'POST':
         form = UserRegistrationForm(data=request.POST)
         if form.is_valid():
-            form.save()
+            user = form.save()
+            send_verification_mail(user)
             messages.success(request, 'Вы успешно зарегестрировались!')
             return HttpResponseRedirect(reverse('users:login'))
     else:
@@ -48,6 +50,7 @@ def profile(request):
             return HttpResponseRedirect(reverse('users:profile'))
     else:
         form = UserProfileForm(instance=user)
+
     context = {
         'title': 'Geekshop - Личный кабинет',
         'form': form,
@@ -56,7 +59,25 @@ def profile(request):
     return render(request, 'users/profile.html', context)
 
 
+def verify(request, email, key):
+    try:
+        user = User.objects.get(email=email, activation_key=key)
+        if user.is_activation_key_expired:
+            return render(request, "users/verification.html", context={
+                'message': "Key is expired"
+            })
+
+        user.activate()
+        user.save()
+        return render(request, "users/verification.html", context={
+            'message': "Success"
+        })
+    except User.DoesNotExist:
+        return render(request, "users/verification.html", context={
+            'message': "Verification failed"
+        })
+
+
 def logout(request):
     auth.logout(request)
     return HttpResponseRedirect(reverse('index'))
-
