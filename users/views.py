@@ -2,10 +2,11 @@ from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
 from django.contrib import messages
+from django.db import transaction
 from django.contrib.auth.decorators import login_required
 from .utils import send_verification_mail
-from .models import User
-from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
+from .models import User, UserProfile
+from users.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserProfileEditForm
 from baskets.models import Basket
 
 
@@ -40,21 +41,42 @@ def registration(request):
     return render(request, 'users/registration.html', context)
 
 
+# @login_required
+# def profile(request):
+#     user = request.user
+#     if request.method == 'POST':
+#         form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
+#         if form.is_valid():
+#             form.save()
+#             return HttpResponseRedirect(reverse('users:profile'))
+#     else:
+#         form = UserProfileForm(instance=user)
+
+#     context = {
+#         'title': 'Geekshop - Личный кабинет',
+#         'form': form,
+#         'baskets': Basket.objects.filter(user=user),
+#     }
+#     return render(request, 'users/profile.html', context)
+
+@transaction.atomic
 @login_required
 def profile(request):
-    user = request.user
+    user_form = UserProfileForm(instance=request.user)
+    profile_form = UserProfileEditForm(instance=request.user.profile)
     if request.method == 'POST':
-        form = UserProfileForm(instance=user, files=request.FILES, data=request.POST)
-        if form.is_valid():
-            form.save()
+        user_form = UserProfileForm(instance=request.user, files=request.FILES, data=request.POST)
+        profile_form = UserProfileEditForm(instance=request.user.profile, data=request.POST)
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
             return HttpResponseRedirect(reverse('users:profile'))
-    else:
-        form = UserProfileForm(instance=user)
 
     context = {
         'title': 'Geekshop - Личный кабинет',
-        'form': form,
-        'baskets': Basket.objects.filter(user=user),
+        'user_form': user_form,
+        'profile_form': profile_form,
+        'baskets': Basket.objects.filter(user=request.user),
     }
     return render(request, 'users/profile.html', context)
 
